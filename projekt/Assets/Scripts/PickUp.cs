@@ -28,10 +28,6 @@ public class PickUp : MonoBehaviour
                 GetComponent<Rigidbody>().isKinematic = false;
                 this.transform.position = theDest.transform.position;
             }
-            if ((Input.GetKeyDown(KeyCode.E) && Input.GetMouseButton(0))/*collider.GetComponent<BoxCollider>().enabled== true*/ /*|| Input.GetKeyUp(KeyCode.E)*/) 
-            {
-                collider.GetComponent<Igrac>().counter = 0;
-            }
         }
     }
 }

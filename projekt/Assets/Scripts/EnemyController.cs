@@ -15,6 +15,7 @@ public class EnemyController : MonoBehaviour
     public GameObject napadni;
     public GameObject collider;
     public Transform teleportTarget;
+    public GameObject gledaj;
     public bool napad = false;
     bool walking = true;
     float timer = 0.0f;
@@ -22,7 +23,7 @@ public class EnemyController : MonoBehaviour
     public bool jednom = false;
     bool lijek = false;
     float dist;
-    public bool provjera=false;
+    public bool provjera = false;
     Vector3 pozicija;
     Igrac igrac;
     private float elapsed;
@@ -32,7 +33,7 @@ public class EnemyController : MonoBehaviour
         navAgent = GetComponent<NavMeshAgent>();
         anim = GetComponent<Animator>();
         pozicija = new Vector3(teleportTarget.transform.position.x, (teleportTarget.transform.position.y + 0.55f), teleportTarget.transform.position.z);
-        
+
     }
 
     // Update is called once per frame
@@ -50,36 +51,45 @@ public class EnemyController : MonoBehaviour
                 navAgent.SetDestination(hit.point);
             }
         }
-        if (napad == true && !anim.GetCurrentAnimatorStateInfo(0).IsTag("sleep"))
+        if (napad == true && !anim.GetCurrentAnimatorStateInfo(0).IsTag("sleep") && napadni.GetComponent<Igrac>().counter != 5)
         {
             transform.LookAt(new Vector3(napadni.transform.position.x, transform.position.y, napadni.transform.position.z));
 
             anim.SetFloat(punch, 3);
         }
-        if (napadni.GetComponent<Igrac>().counter == 5 && napad == true && !jednom)
+        //Debug.Log(napadni.GetComponent<Igrac>().counter);
+        if (napadni.GetComponent<Igrac>().counter == 5 /*&& napad == true*/ && !jednom)
         {
+            //Debug.Log("ušao sam");
             anim.SetInteger(diedInt, 1);
+            //navAgent.updateRotation = false;
+            navAgent.isStopped = true;
             elapsed += Time.deltaTime;
             if (elapsed >= 2f)
             {
                 elapsed = 0f;
                 collider.GetComponent<BoxCollider>().enabled = false;
                 promjenapozicije();
-                anim.SetInteger("condition", 1);
+                //anim.SetInteger("condition", 1);
+                //navAgent.isStopped = true;
+                //navAgent.SetDestination(false);
                 var y = 180 - transform.position.y;
                 var rotate = new Vector3(90f, (transform.rotation.y + y), transform.rotation.z);
                 transform.Rotate(rotate);
+                //Debug.Log("rotate:" + rotate);
+                //transform.Rotate(rotate);
+                //navAgent.transform.rotation = Quaternion.LookRotation(rotate);
+                //transform.rotation = Quaternion.LookRotation(navAgent.velocity.normalized);
+                //navAgent.updateRotation = true;
+                //transform.LookAt(new Vector3(gledaj.transform.position.x, gledaj.transform.position.y, gledaj.transform.position.z));
+                //navAgent.ResetPath();
                 jednom = true;
             }
         }
         if (collider.GetComponent<BoxCollider>().enabled == true && dist <= 9 && napad == false /*&& lijek==true*/)
-            {
-                navAgent.SetDestination(napadni.transform.position);
-            }
-            if (anim.GetCurrentAnimatorStateInfo(0).IsTag("sleep"))
-            {
-                navAgent.isStopped = true;
-            }
+        {
+            navAgent.SetDestination(napadni.transform.position);
+        }
     }
     void OnTriggerEnter(Collider other)
     {
@@ -89,7 +99,7 @@ public class EnemyController : MonoBehaviour
         }
         if (other.CompareTag("napad"))
         {
-            napad= true;
+            napad = true;
             walking = false;
             check(!provjera);
         }
@@ -127,6 +137,7 @@ public class EnemyController : MonoBehaviour
     void promjenapozicije()
     {
         transform.position = pozicija;
+        //transform.LookAt(new Vector3(gledaj.transform.position.x, gledaj.transform.position.y, gledaj.transform.position.z));
     }
 
     void check(bool check)

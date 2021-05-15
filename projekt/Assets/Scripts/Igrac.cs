@@ -52,38 +52,24 @@ public class Igrac : MonoBehaviour
         var notpunch = Input.GetMouseButtonUp(0);
         var pickup = Input.GetKey(KeyCode.E);
         var notpickup = Input.GetKeyUp(KeyCode.E);
-        if (punch && anim.GetFloat("Speed")>0.1)
+        if (punch)
         {
+            timer += Time.deltaTime;
             anim.SetInteger(conditionTrigger, 1);
-            timer = anim.GetCurrentAnimatorStateInfo(0).normalizedTime;
         }
-        
-        if (notpunch && anim.GetFloat("Speed") > 0.1)
+        if (notpunch /*&& anim.GetFloat("Speed") < 0.1*/)
         {
+            //anim.SetTrigger(idlepunchTrigger);
+            timer = 0;
             anim.SetInteger(conditionTrigger, 0);
+            //counter += 1;
         }
-        if (punch && anim.GetFloat("Speed") < 0.1/*&& (anim.GetCurrentAnimatorStateInfo(0).IsName("Punching_idle"))*/)
-        {
-            anim.SetInteger("condition", 1);
-            timer = anim.GetCurrentAnimatorStateInfo(0).normalizedTime;        
-        }
-
-        if (System.Math.Round(timer, 2) >= 4.7 && napadni.GetComponent<EnemyController>().napad == true)
+        if (timer >= 7.5f && napadni.GetComponent<EnemyController>().napad == true)
         {
             //counter = 1;
             counter = 5;
+            //timer = 0;
             //dead = true;
-        }
-        else
-        {
-            timer = 0;
-        }
-        if (notpunch && anim.GetFloat("Speed") < 0.1)
-        {
-            //anim.SetTrigger(idlepunchTrigger);
-            anim.SetInteger(conditionTrigger, 0);
-            //counter += 1;
-
         }
         if (Input.GetMouseButtonDown(1))
         {
@@ -108,7 +94,7 @@ public class Igrac : MonoBehaviour
 
         if (timer >= timerMax)
         {
-            return true; 
+            return true;
         }
 
         return false;
@@ -117,5 +103,5 @@ public class Igrac : MonoBehaviour
     {
         return i++;
     }
- 
+
 }
