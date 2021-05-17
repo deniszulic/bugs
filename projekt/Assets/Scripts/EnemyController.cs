@@ -16,6 +16,7 @@ public class EnemyController : MonoBehaviour
     public GameObject collider;
     public Transform teleportTarget;
     public GameObject gledaj;
+    public GameObject chair;
     public bool napad = false;
     bool walking = true;
     float timer = 0.0f;
@@ -23,17 +24,21 @@ public class EnemyController : MonoBehaviour
     public bool jednom = false;
     bool lijek = false;
     float dist;
-    public bool provjera = false;
+    public bool provjera=false;
     Vector3 pozicija;
     Igrac igrac;
     private float elapsed;
+    [HideInInspector]
+    public bool sjestinav1 = false;
+    float chairdist;
+    float wait;
     // Start is called before the first frame update
     void Start()
     {
         navAgent = GetComponent<NavMeshAgent>();
         anim = GetComponent<Animator>();
         pozicija = new Vector3(teleportTarget.transform.position.x, (teleportTarget.transform.position.y + 0.55f), teleportTarget.transform.position.z);
-
+        
     }
 
     // Update is called once per frame
@@ -42,8 +47,10 @@ public class EnemyController : MonoBehaviour
         var velocity = navAgent.velocity.magnitude / navAgent.speed;
         anim.SetFloat(SpeedFloat, velocity);
         dist = Vector3.Distance(napadni.transform.position, transform.position);
-        if (Input.GetKey(KeyCode.Alpha1) && napad == false /*&& walking==true *//*&& napad==false*/)
+        chairdist = Vector3.Distance(chair.transform.position, transform.position);
+        if (Input.GetKey(KeyCode.Alpha1) && napad == false /*&& anim.GetCurrentAnimatorStateInfo(0).IsName("Idle")*/ /*&& anim.GetCurrentAnimatorStateInfo(0).IsName("Stand To Sit")*/ /*&& walking==true *//*&& napad==false*/)
         {
+            Debug.Log("prvi");
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
@@ -51,8 +58,51 @@ public class EnemyController : MonoBehaviour
                 navAgent.SetDestination(hit.point);
             }
         }
+        //Debug.Log(sjestinav1);
+        if (/*Input.GetKey(KeyCode.Alpha1) && */sjestinav1 == true && Input.GetKeyDown(KeyCode.T) && !this.anim.GetCurrentAnimatorStateInfo(0).IsName("Stand To Sit")) /*&& !anim.GetCurrentAnimatorStateInfo(0).IsName("Stand To Sit"))*/ //*&& chairdist<=0.9*/ /*&& walking==true *//*&& napad==false*/)
+        {
+            Debug.Log("drugi");
+            //anim.SetTrigger("sjedni");
+            anim.SetInteger("sjedni", 1);
+            //sjestinav1 = false;
+            /*Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit))
+            {
+                navAgent.SetDestination(hit.point);
+            }*/
+        }
+        //Debug.Log(sjestinav1);
+        if(/*sjestinav1==false && *//*anim.GetCurrentAnimatorStateInfo(0).IsName("Stand To Sit") &&*/ Input.GetKey(KeyCode.Alpha7) && this.anim.GetCurrentAnimatorStateInfo(0).IsName("Stand To Sit")/*&& chairdist>1.5 /*&&*//* chairdist>0.9*/ /*Input.GetKeyDown(KeyCode.Alpha1)*/)
+        {
+            Debug.Log("treci");
+            /*anim.SetTrigger("notsitting");
+            anim.SetTrigger("idle");*/
+            //navAgent.enabled = false;
+            anim.SetInteger("notsitting", 1);
+            //anim.SetInteger("notsitting", 2);
+            //sjestinav1 = false;
+            //anim.SetInteger("idle", 1);
+            //navAgent.enabled = false;
+        }
+        /*if (Input.GetKey(KeyCode.Alpha8))/*anim.GetCurrentAnimatorStateInfo(0).IsName("Sit To Stand"))*/ /*&& Input.GetKey(KeyCode.Alpha7)*///)
+       /* {
+            Debug.Log("73");
+            /*wait += Time.deltaTime;
+            if (wait >= 2f)
+            {*/
+         /*       wait = 0;
+            //anim.SetInteger("idle", 1);
+            //sjestinav1 = false;
+            //anim.SetInteger("notsitting", 2);
+            //anim.SetFloat(SpeedFloat, 0);
+            //sjestinav1 = false;
+            anim.SetFloat("idle", 0);
+            //}
+        }*/
         if (napad == true && !anim.GetCurrentAnimatorStateInfo(0).IsTag("sleep") && napadni.GetComponent<Igrac>().counter != 5)
         {
+            
             transform.LookAt(new Vector3(napadni.transform.position.x, transform.position.y, napadni.transform.position.z));
 
             anim.SetFloat(punch, 3);
@@ -63,7 +113,8 @@ public class EnemyController : MonoBehaviour
             //Debug.Log("ušao sam");
             anim.SetInteger(diedInt, 1);
             //navAgent.updateRotation = false;
-            navAgent.isStopped = true;
+            //navAgent.isStopped = true;
+            navAgent.enabled = false;
             elapsed += Time.deltaTime;
             if (elapsed >= 2f)
             {
@@ -73,8 +124,9 @@ public class EnemyController : MonoBehaviour
                 //anim.SetInteger("condition", 1);
                 //navAgent.isStopped = true;
                 //navAgent.SetDestination(false);
+                elapsed += Time.deltaTime;
                 var y = 180 - transform.position.y;
-                var rotate = new Vector3(90f, (transform.rotation.y + y), transform.rotation.z);
+                var rotate = new Vector3(0f, (transform.rotation.y + y), transform.rotation.z);
                 transform.Rotate(rotate);
                 //Debug.Log("rotate:" + rotate);
                 //transform.Rotate(rotate);
@@ -86,10 +138,10 @@ public class EnemyController : MonoBehaviour
                 jednom = true;
             }
         }
-        if (collider.GetComponent<BoxCollider>().enabled == true && dist <= 9 && napad == false /*&& lijek==true*/)
-        {
-            navAgent.SetDestination(napadni.transform.position);
-        }
+        if (collider.GetComponent<BoxCollider>().enabled == true && dist <= 9 && napad == false && navAgent.enabled==true /*&& lijek==true*/)
+            {
+                navAgent.SetDestination(napadni.transform.position);
+            }
     }
     void OnTriggerEnter(Collider other)
     {
@@ -99,7 +151,7 @@ public class EnemyController : MonoBehaviour
         }
         if (other.CompareTag("napad"))
         {
-            napad = true;
+            napad= true;
             walking = false;
             check(!provjera);
         }
@@ -112,6 +164,10 @@ public class EnemyController : MonoBehaviour
                 //collider.SetActive(true);
                 collider.GetComponent<BoxCollider>().enabled = true;
             }
+        }
+        if (other.CompareTag("sjestnavagent1"))
+        {
+            sjestinav1 = true;
         }
     }
     void OnTriggerExit(Collider other)
@@ -132,6 +188,10 @@ public class EnemyController : MonoBehaviour
         if (other.CompareTag("object"))
         {
             antibiotik = false;
+        }
+        if (other.CompareTag("sjestnavagent1"))
+        {
+            sjestinav1 = false;
         }
     }
     void promjenapozicije()

@@ -30,6 +30,13 @@ public class Igrac : MonoBehaviour
     public GameObject napadni;
     public GameObject pomocnik;
     public GameObject collider;
+    public GameObject character;
+    private int hFloat;                                   // Animator variable related to Horizontal Axis.
+    private int vFloat;
+    private float h;                                      // Horizontal Axis.
+    private float v;
+    bool iswalkingtowards = false;
+    bool sittingon = false;
     //public bool dead = false;
     //public GameObject thePlayer;
     // Start is called before the first frame update
@@ -52,11 +59,22 @@ public class Igrac : MonoBehaviour
         var notpunch = Input.GetMouseButtonUp(0);
         var pickup = Input.GetKey(KeyCode.E);
         var notpickup = Input.GetKeyUp(KeyCode.E);
-        if (punch)
+
+        // Set the input axes on the Animator Controller.
+        if (punch )
         {
             timer += Time.deltaTime;
-            anim.SetInteger(conditionTrigger, 1);
+            /*if (timer >= 8f)
+            {*/
+                anim.SetInteger(conditionTrigger, 1);
+            //}
+            //timer = anim.GetCurrentAnimatorStateInfo(0).normalizedTime;
         }
+        /*else
+        {
+            timer = 0;
+        }*/
+        //Debug.Log(timer);
         if (notpunch /*&& anim.GetFloat("Speed") < 0.1*/)
         {
             //anim.SetTrigger(idlepunchTrigger);
@@ -71,12 +89,27 @@ public class Igrac : MonoBehaviour
             //timer = 0;
             //dead = true;
         }
+        /*else
+        {
+            //timer = 0;
+            counter = 0;
+        }*/
+        //Debug.Log(counter);
+        /*if (notpunch && anim.GetFloat("Speed") < 0.1 && pickup)
+        {
+            anim.SetInteger(conditionTrigger, 0);
+        }
+        if (notpunch && anim.GetFloat("Speed") < 0.1 && notpickup)
+        {
+            anim.SetInteger(conditionTrigger, 0);
+        }*/
         if (Input.GetMouseButtonDown(1))
         {
             transform.Rotate(270f, 0, 0, 0);
             Vector3 pozicija = new Vector3(teleportTarget.transform.position.x, (teleportTarget.transform.position.y + 0.55f), teleportTarget.transform.position.z);
             transform.position = pozicija;
         }
+        
     }
     private static Igrac igr;
     public static Igrac igrac
@@ -94,7 +127,7 @@ public class Igrac : MonoBehaviour
 
         if (timer >= timerMax)
         {
-            return true;
+            return true; 
         }
 
         return false;
@@ -103,5 +136,5 @@ public class Igrac : MonoBehaviour
     {
         return i++;
     }
-
+ 
 }

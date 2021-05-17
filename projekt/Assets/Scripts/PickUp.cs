@@ -7,10 +7,10 @@ public class PickUp : MonoBehaviour
     // Start is called before the first frame update
     public Transform theDest;
     public GameObject collider;
-   
+
     void Update()
     {
-        float dist= Vector3.Distance(theDest.transform.position, transform.position);
+        float dist = Vector3.Distance(theDest.transform.position, transform.position);
         if (dist < 0.3)
         {
             if (Input.GetKeyDown(KeyCode.E))
@@ -28,6 +28,10 @@ public class PickUp : MonoBehaviour
                 GetComponent<Rigidbody>().isKinematic = false;
                 this.transform.position = theDest.transform.position;
             }
-        }
+            /*if ((Input.GetKey(KeyCode.E) && Input.GetMouseButton(0))/*collider.GetComponent<BoxCollider>().enabled== true*/ /*|| Input.GetKeyUp(KeyCode.E)*///) 
+            /*{
+                collider.GetComponent<Igrac>().counter = 0;
+            }*/
+        } 
     }
 }

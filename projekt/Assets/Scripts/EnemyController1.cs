@@ -6,10 +6,12 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent), typeof(Animator))]
 public class EnemyController1 : MonoBehaviour
 {
-    private static readonly int SpeedFloat = Animator.StringToHash("Speed");
+    private static readonly int SpeedFloat = Animator.StringToHash("Forward");
     private Animator anim;
     private NavMeshAgent navAgent;
     private Transform following;
+    private float elapsed;
+    private bool antibiotik=false;
     // Start is called before the first frame update
     void Start()
     {
@@ -36,6 +38,15 @@ public class EnemyController1 : MonoBehaviour
                 navAgent.SetDestination(hit.point);
             }
         }
+        if (antibiotik == true)
+        {
+            elapsed += Time.deltaTime;
+            if (elapsed >= 2f)
+            {
+                elapsed = 0f;
+                anim.SetInteger("seizure", 2);
+            }
+        }
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -43,6 +54,11 @@ public class EnemyController1 : MonoBehaviour
         {
             following = other.gameObject.transform;
             Debug.Log("following:" + following);
+        }
+        if (other.CompareTag("object"))
+        {
+            anim.SetInteger("seizure", 1);
+            antibiotik = true;
         }
     }
     private void OnTriggerExit(Collider other)
